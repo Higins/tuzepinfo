@@ -30,6 +30,8 @@ jobs:
           - 5672:5672
           - 15672:15672
         options: >-
+          --name rabbitmq
+          --network-alias rabbitmq
           --health-cmd "rabbitmq-diagnostics -q ping"
           --health-interval 10s
           --health-timeout 5s
