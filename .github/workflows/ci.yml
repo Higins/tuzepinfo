@@ -47,12 +47,38 @@ jobs:
           extensions: mbstring, xml, ctype, iconv, intl, pdo_pgsql
           coverage: xdebug
 
-      - name: Wait for RabbitMQ to be ready
+      - name: Wait for RabbitMQ and debug
         run: |
-          until nc -z -v -w30 rabbitmq 5672; do
-            echo "Waiting for RabbitMQ to be ready..."
-            sleep 5
-          done
+          echo "Checking Docker containers..."
+          docker ps
+
+          echo "Attempting to connect to RabbitMQ..."
+          if nc -z -v -w5 rabbitmq 5672; then
+            echo "Successfully connected to rabbitmq:5672"
+          elif nc -z -v -w5 localhost 5672; then
+            echo "Successfully connected to localhost:5672"
+          else
+            echo "Could not connect to RabbitMQ. Checking container status..."
+            docker ps | grep rabbitmq
+            echo "RabbitMQ container logs:"
+            docker logs rabbitmq
+
+            echo "Network inspection:"
+            docker network inspect bridge
+
+            echo "Retrying connection every 5 seconds..."
+            for i in {1..12}; do
+              echo "Attempt $i of 12..."
+              if nc -z -v -w5 rabbitmq 5672 || nc -z -v -w5 localhost 5672; then
+                echo "Connection successful on retry!"
+                break
+              fi
+              if [ $i -eq 12 ]; then
+                echo "Failed to connect after 12 attempts. Continuing anyway..."
+              fi
+              sleep 5
+            done
+          fi
 
       - name: Copy .env
         run: cp .env.example .env.testing
