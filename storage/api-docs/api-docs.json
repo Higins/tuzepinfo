@@ -1,0 +1,160 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "Tüzépinfo API Dokumentáció",
+        "description": "Tüzépinfo ár összesítő rendszer API dokumentációja",
+        "version": "1.0.0"
+    },
+    "servers": [
+        {
+            "url": "http://localhost:8000",
+            "description": "API Server"
+        }
+    ],
+    "paths": {
+        "/api/v1/prices": {
+            "get": {
+                "tags": [
+                    "Prices"
+                ],
+                "summary": "Összes termék listázása legfrissebb árakkal",
+                "operationId": "99c4baa38f1abf80bba5fd57d1dc44f8",
+                "responses": {
+                    "200": {
+                        "description": "Sikeres lekérdezés",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "properties": {
+                                            "id": {
+                                                "type": "integer"
+                                            },
+                                            "name": {
+                                                "type": "string"
+                                            },
+                                            "category": {
+                                                "type": "string"
+                                            },
+                                            "unit": {
+                                                "type": "string"
+                                            },
+                                            "latest_price": {
+                                                "properties": {
+                                                    "price": {
+                                                        "type": "number"
+                                                    },
+                                                    "currency": {
+                                                        "type": "string"
+                                                    },
+                                                    "source": {
+                                                        "type": "string"
+                                                    },
+                                                    "updated_at": {
+                                                        "type": "string",
+                                                        "format": "date-time"
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        },
+                                        "type": "object"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/prices/{product}": {
+            "get": {
+                "tags": [
+                    "Prices"
+                ],
+                "summary": "Részletes ár előzmények lekérdezése egy adott termékhez",
+                "operationId": "04ed70ffdcc5988b683ef265b2314dda",
+                "parameters": [
+                    {
+                        "name": "product",
+                        "in": "path",
+                        "description": "Termék ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Sikeres lekérdezés",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "id": {
+                                            "type": "integer"
+                                        },
+                                        "name": {
+                                            "type": "string"
+                                        },
+                                        "category": {
+                                            "type": "string"
+                                        },
+                                        "unit": {
+                                            "type": "string"
+                                        },
+                                        "description": {
+                                            "type": "string"
+                                        },
+                                        "price_history": {
+                                            "type": "array",
+                                            "items": {
+                                                "properties": {
+                                                    "price": {
+                                                        "type": "number"
+                                                    },
+                                                    "currency": {
+                                                        "type": "string"
+                                                    },
+                                                    "source": {
+                                                        "type": "string"
+                                                    },
+                                                    "collected_at": {
+                                                        "type": "string",
+                                                        "format": "date-time"
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Termék nem található"
+                    }
+                }
+            }
+        }
+    },
+    "components": {
+        "securitySchemes": {
+            "bearerAuth": {
+                "type": "http",
+                "bearerFormat": "JWT",
+                "scheme": "bearer"
+            }
+        }
+    },
+    "tags": [
+        {
+            "name": "Prices",
+            "description": "Prices"
+        }
+    ]
+}
